@@ -1,0 +1,60 @@
+#include "msp430.h"                     ; #define controlled include file
+
+        NAME    main                    ; module name
+
+        PUBLIC  main                    ; make the main label vissible
+                                        ; outside this module
+        ORG     0FFFEh
+        DC16    init                    ; set reset vector to 'init' label
+
+        RSEG    CSTACK                  ; pre-declaration of segment
+        RSEG    CODE                    ; place program in 'CODE' segment
+
+init:   MOV     #SFE(CSTACK), SP        ; set up stack
+
+main:   
+        NOP                             ; main program
+        MOV.W   #WDTPW+WDTHOLD,&WDTCTL  ; Stop watchdog timer 
+        
+        // P1.0 Set Dir = output, using BIS = logical "OR"
+        BIS.B #00000001b, P1DIR  
+        BIS.B #10000000b, P4DIR
+
+loop:
+
+
+
+        mov #10554, R5 ;1
+delay1:
+        XOR.B #00000001b, P1OUT ; 2 cycles
+        
+        mov #60, R6 ;2
+sub_delay1:
+        sub #1, R6 ;1
+        jnz sub_delay1 ;2
+        
+        sub #1, R5 ;1
+        jnz delay1 ;2
+        BIC.B #00000001b, P1OUT ; 2 cycles
+
+
+
+
+        mov #10554, R5
+delay2:
+        XOR.B #10000000b, P4OUT ; 2 cycles
+        
+        mov #60, R6
+sub_delay2:
+        sub #1, R6
+        jnz sub_delay2  
+        
+        sub #1, R5
+        jnz delay2
+        BIC.B #10000000b, P4OUT ; 2 cycles
+
+        JMP loop
+        JMP $
+        END
+        
+       
