@@ -1,0 +1,27 @@
+#include "msp430.h"      
+        PUBLIC  DelayTenths                    ; make the main label vissible
+BIGLOOPS    EQU 20 
+LITTLELOOPS EQU 20 
+        RSEG    CODE                    ; place program in 'CODE' segment
+DelayTenths:
+
+  sub.w #4,SP
+  jmp LoopTest
+OuterLoop:
+  mov.w #BIGLOOPS,2(SP)
+BigLoop:
+  mov.w #LITTLELOOPS,0(SP)
+LittleLoop:
+  dec.w 0(SP)
+  jnz LittleLoop
+  dec.w 2(SP)
+  jnz BigLoop
+  dec.w 8(SP)
+  //......
+LoopTest:
+  //......
+  cmp.w #0,8(SP)
+  jnz OuterLoop
+  add.w #4,SP
+  RETA
+  END
