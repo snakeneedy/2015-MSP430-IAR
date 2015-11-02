@@ -125,8 +125,8 @@ Microprocessor Principles and Applications
 - `JMP` ; 無條件跳
 - `JEQ/JZ` ; CMP兩數相等(Zero flag = 1) 跳
 - `JNE/JNZ` ; CMP兩數不相等(Zero flag = 0) 跳
-- `JGE` ; dst >= src 時跳
-- `JL` ; dst < src 時跳
+- `JGE` ; (Signed) dst >= src 時跳
+- `JL` ; (Signed) dst < src 時跳
 - `JN`: (dst - src) N Flag = 1 跳，結果是負的就跳，效果相當於 `JL`
 - `JC`/`JHS` ; C Flag = 1 跳，代表有進位或者dst > src時跳
 - `JNC`/`JLO`: C Flag = 0 跳，代表無進位或者dst < src時跳
