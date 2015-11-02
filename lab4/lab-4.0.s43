@@ -1,0 +1,12 @@
+#include "msp430.h"                     ; #define controlled include file
+        PUBLIC  mpy                     ; make the label 'mpy' vissible
+                                        ; outside this module
+        RSEG    CODE                    ; place program in 'CODE' segment
+mpy:
+        MOV R12, &MPYS
+        ;MOV R12, &MPY
+        MOV R13, &OP2
+        MOV &RESLO, R12
+        MOV &RESHI, R13
+        RET                             ; return
+        END

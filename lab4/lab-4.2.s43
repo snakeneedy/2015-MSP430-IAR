@@ -1,0 +1,57 @@
+#include "msp430.h"                     ; #define controlled include file
+        EXTERN  mpy                     ; import 'mpy'
+        NAME    main                    ; module name
+        PUBLIC  main                    ; make the main label vissible
+                                        ; outside this module
+        ORG     0FFFEh
+        DC16    init                    ; set reset vector to 'init' label
+        RSEG    CSTACK                  ; pre-declaration of segment
+        RSEG    CODE                    ; place program in 'CODE' segment
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+fact1 MACRO
+LOCAL fact1_main, fact1_end
+fact1_main:
+        CMP #1, R9
+        JN fact1_end
+        JZ fact1_end
+        ; n > 1
+;fact1_ntwo:
+        MOV R9, R12
+        MOV R10, R13
+        CALL #mpy
+        MOV R12, R10 ; assume 16-bit
+        ;
+        DEC R9;
+        JMP fact1_main ; run again
+        ; fact1 ;;;;;;;;;;;;;;;;;;;;;;; cause error - too deep macro nesting
+fact1_end:
+        ENDM
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+fact MACRO
+LOCAL fact_main, fact_two, fact_end
+fact_main:
+        CMP #2, R9
+        JN fact_two
+        ; 2 >= n
+        MOV R9, R10
+        DEC R9
+        fact1
+        JMP fact_end
+fact_two:
+        ; 2 < n
+        MOV R9, R10
+fact_end:
+        ENDM
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+init:   MOV     #SFE(CSTACK), SP        ; set up stack
+main:   NOP                             ; main program
+        MOV.W   #WDTPW+WDTHOLD,&WDTCTL  ; Stop watchdog timer
+        
+        MOV.B #0, R10 ; loc
+        MOV.B #9, R9 ; n
+        fact
+main_end:
+        JMP $                           ; jump to current location '$'
+                                        ; (endless loop)
+        END
