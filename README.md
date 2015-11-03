@@ -164,6 +164,17 @@ Sub-Runtine 寫法:
     ; in main or sub program ...
         CALL #Labelname   ; 使用 CALL 呼叫，記得加上 # 號
 
+## SP (Stack Pointer)
+
+    SUB #Num1, SP
+    ADD #Num2, SP
+    PUSH #Num3
+    ; SUB #2, SP
+    ; MOV #Num3, 0(SP)
+    POP R5
+    ; MOV 0(SP), R5
+    ; ADD #2, SP
+
 ## 32-bit multiplier
 (32-bit)x(32-bit)=(64-bit)
 
