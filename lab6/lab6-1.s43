@@ -1,0 +1,116 @@
+#include "msp430.h"                     ; #define controlled include file
+
+        NAME    main                    ; module name
+
+        PUBLIC  main                    ; make the main label vissible
+                                        ; outside this module
+        ORG     0FFFEh
+        DC16    init                    ; set reset vector to 'init' label
+        
+        ORG     0FFDEh                  ;中斷向量
+        DW      P1_ISR
+        
+        ORG     0FFD4h                  ;中斷向量
+        DW      P2_ISR
+
+        RSEG    CSTACK                  ; pre-declaration of segment
+        RSEG    CODE                    ; place program in 'CODE' segment
+
+DELAY_SEC  EQU   2
+
+Delay1s:
+        MOV #577, R10
+Delay1s_f:
+        MOV #576, R11
+Delay1s_f_f:
+        DEC R11
+        JNZ Delay1s_f_f
+        DEC R10
+        JNZ Delay1s_f
+        
+        MOV #15, R11
+Delay1s_f2:
+        DEC R11
+        JNZ Delay1s_f2
+        NOP
+        RET
+
+;==========================initialization===================================
+init:   MOV     #SFE(CSTACK), SP        ; set up stack
+
+main:   NOP                             ; main program
+        MOV.W   #WDTPW+WDTHOLD,&WDTCTL  ; Stop watchdog timer
+        
+        MOV #0, R5
+        MOV #0, R6
+        
+        MOV.B   #00000000b, &P2SEL                ;initial port 2.1 setting
+        MOV.B   #00000000b, &P2DIR
+        MOV.B   #00000010b, &P2REN
+        MOV.B   #00000010b, &P2OUT
+        MOV.B   #00000010b, &P2IES
+        MOV.B   #00000010b, &P2IE
+        BIC.B   #00000010b, &P2IFG    ; clean P2.1 interrupt flag
+        
+        MOV.B   #00000000b, &P1SEL                ;initial port 1.1 setting
+        MOV.B   #00000000b, &P1DIR
+        MOV.B   #00000010b, &P1REN
+        MOV.B   #00000010b, &P1OUT
+        MOV.B   #00000010b, &P1IES
+        MOV.B   #00000010b, &P1IE
+        BIC.B   #00000010b, &P1IFG    ; clean P2.1 interrupt flag
+        
+        BIS.B   #00000001b, &P1DIR
+        BIC.B   #00000001b, &P1OUT
+        BIS.B   #10000000b, &P4DIR
+        BIC.B   #10000000b, &P4OUT
+        
+        EINT                            ; enable interrupt
+        ; enable GIE
+Loop:
+        
+        CALL #Delay1s
+        
+        CMP #0, R5
+        JZ p4_7_off
+        JMP p4_7_off_else
+p4_7_off:
+        BIC.B #10000000b, P4OUT
+        JMP p4_7_off_end
+p4_7_off_else:
+        DEC R5
+p4_7_off_end:
+
+        CMP #0, R6
+        JZ p1_0_off
+        JMP p1_0_off_else
+p1_0_off:
+        BIC.B #00000001b, P1OUT
+        JMP p1_0_off_end
+p1_0_off_else:
+        DEC R6
+p1_0_off_end:
+
+
+Loop_end:
+        JMP Loop                           ; jump to current location '$'
+                                        ; (endless loop)
+        
+;=========================ISR code==========================================
+P1_ISR:                ;function to do in ISR
+        BIC.B #00000010b, &P1IE     ; disable P1.1 interrupt
+        BIS.B #10000000b, &P4OUT    ; on/off LED 4.7
+        MOV #DELAY_SEC, R5
+        BIC.B #00000010b, &P1IFG    ; clean P1.1 interrupt flag
+        BIS.B #00000010b, &P1IE    ; enable P1.1 interrupt
+        RETI
+
+
+P2_ISR:                ;function to do in ISR
+        BIC.B #00000010b, &P2IE     ; disable P2.1 interrupt
+        BIS.B #00000001b, &P1OUT    ; on/off LED 1.0
+        MOV #DELAY_SEC, R6
+        BIC.B #00000010b, &P2IFG    ; clean P2.1 interrupt flag
+        BIS.B #00000010b, &P2IE    ; enable P2.1 interrupt
+        RETI
+        END
