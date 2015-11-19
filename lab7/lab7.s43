@@ -1,0 +1,75 @@
+   ;========================================
+   ;Blink LED0 by TimerA1 in continuous-mode
+   ;Blink LED1 by TimerA0 in up-mode
+   ;========================================
+        
+#include "msp430.h"                     ; #define controlled include file
+        NAME    main                    ; module name
+        PUBLIC  main                    ; make the main label vissible
+        ;=======================================
+        ;SETTING interrupt vector table
+        ;========================================
+        ORG     0FFFEh
+        DC16    init                    ; set reset vector to 'init' label
+	
+        ORG	0FFE0h ; TimerA1's overflow
+	DC16	TIMERISR_OVERFLOW ;->LED1
+        
+	ORG	0FFEAh ; TimerA0's CCR
+        DC16    TIMERISR_CCR ;->LED2
+
+        ;=======================================
+        ;initialization
+        ;========================================
+        RSEG    CSTACK                  ; pre-declaration of segment
+        RSEG    CODE                    ; place program in 'CODE' segment
+init:   MOV     #SFE(CSTACK), SP        ; set up stack
+main:   NOP                             ; main program
+        MOV.W   #WDTPW+WDTHOLD,&WDTCTL  ; Stop watchdog timer
+        ;========================================
+        ;clock system DEFAULT
+        ;ACLK 32768HZ
+        ;SMCLK 1M
+        ;INCLK ...
+        ;========================================
+        
+        ;=======================================
+        ;SETTING GPIO OF LED0 and LED1(P1 and P4)
+        ;=======================================
+        MOV.B #00000000b,&P1SEL //LED1
+        MOV.B #00000001b,&P1DIR
+        MOV.B #00000001b,&P1OUT   
+	
+        MOV.B #00000000b,&P4SEL //LED2
+	MOV.B #10000000b,&P4DIR
+	MOV.B #10000000b,&P4OUT
+        ;=======================================
+        ;SETTING TIMER
+        ;========================================
+
+        MOV.W #TASSEL_1+MC_2+ID_0+TACLR+TAIE,&TA1CTL ;Setting timer register.
+        MOV.W #32768,TA1R
+
+        MOV.W #TASSEL_1+MC_1+ID_0+TACLR,&TA0CTL ;Setting timer register. 
+	MOV.W #16384,&TA0CCR0 ;Setting timer's threshold for other function
+        MOV.W #CCIE,&TA0CCTL0 ;Enable the interrupt.
+        
+        
+	MOV.W #GIE+CPUOFF,SR;
+        JMP $
+        
+TIMERISR_OVERFLOW:
+        ;=======================================
+        ;TIMER_CCR ISR
+        ;========================================
+        XOR.B #00000001b,&P1OUT ;LED1 Control
+        MOV.W #0,&TA1IV
+        MOV.W #32768,TA1R
+        RETI;Return from ISR
+TIMERISR_CCR:
+        ;=======================================
+        ;TIMER_CCR ISR
+        ;========================================
+	XOR.B #10000000b,&P4OUT ;LED2 Control
+        RETI
+	END
