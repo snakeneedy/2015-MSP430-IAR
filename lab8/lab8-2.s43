@@ -1,0 +1,75 @@
+#include "msp430.h"                     ; #define controlled include file
+        /////// Lab 8 - 2
+        NAME    main                    ; module name
+
+        PUBLIC  main                    ; make the main label vissible
+                                        ; outside this module
+        ORG     0FFFEh
+        DC16    init                    ; set reset vector to 'init' label
+
+        ORG     0FFDEh
+        DC16    BTN_P1_1_PRESS
+
+        ORG     0FFD4h
+        DC16    BTN_P2_1_PRESS
+
+        RSEG    CSTACK                  ; pre-declaration of segment
+        RSEG    CODE                    ; place program in 'CODE' segment
+
+init:   MOV     #SFE(CSTACK), SP        ; set up stack
+
+main:   NOP                             ; main program
+        MOV.W   #WDTPW+WDTHOLD, &WDTCTL  ; Stop watchdog timer
+        // P7.4
+        BIS.B    #00000001b, &P2DIR
+        BIS.B    #00000001b, &P2SEL
+//        BIS.B    #00010000b, &P7DIR
+//        BIS.B    #00010000b, &P7SEL
+        // P1.1
+        BIC.B    #00000010b, &P1SEL
+        BIC.B    #00000010b, &P1DIR
+        BIS.B    #00000010b, &P1REN
+        BIS.B    #00000010b, &P1OUT
+        BIS.B    #00000010b, &P1IES
+        BIS.B    #00000010b, &P1IE
+        // P2.1
+        BIC.B    #00000010b, &P2SEL
+        BIC.B    #00000010b, &P2DIR
+        BIS.B    #00000010b, &P2REN
+        BIS.B    #00000010b, &P2OUT
+        BIS.B    #00000010b, &P2IES
+        BIS.B    #00000010b, &P2IE
+        //
+        MOV.W #TASSEL_2+MC_1+ID_0+TACLR,&TA1CTL ;Setting timer register. 
+        MOV.W #40, &TA1CCR0
+        MOV.W #0, &TA1CCR1
+//        MOV.W #20, &TA1CCR1
+        MOV.W #OUTMOD_7, &TA1CCTL1
+        
+	MOV.W #GIE+CPUOFF,SR;
+        NOP
+        //
+        JMP $                           ; jump to current location '$'
+                                        ; (endless loop)
+
+BTN_P1_1_PRESS:
+        BIC.B   #00000010b, &P1IE
+//        MOV.W   #300, TB0CCR0
+//        MOV.W   #300, TB0CCR2
+        SUB.W   #2, &TA1CCR1 // decrease the speed
+        //
+        BIC.B   #00000010b, &P1IFG
+        BIS.B   #00000010b, &P1IE
+        RETI
+
+BTN_P2_1_PRESS:
+        BIC.B   #00000010b, &P2IE
+//        MOV.W   #300, TB0CCR0
+//        MOV.W   #3, TB0CCR2
+        ADD.W   #2, &TA1CCR1 // increase the speed
+        //
+        BIC.B   #00000010b, &P2IFG
+        BIS.B   #00000010b, &P2IE
+        RETI
+
+        END

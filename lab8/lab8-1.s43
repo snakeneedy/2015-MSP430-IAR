@@ -1,0 +1,110 @@
+#include "msp430.h"                     ; #define controlled include file
+        // Lab 8-1
+        NAME    main                    ; module name
+
+        PUBLIC  main                    ; make the main label vissible
+                                        ; outside this module
+        ORG     0FFFEh
+        DC16    init                    ; set reset vector to 'init' label
+
+//        ORG     0FFF4h ; TB0, TB0CCR1-CCR4 CCIFGn
+//        DC16    TB_0_2_INTERRUPT
+
+        ORG     0FFDEh
+        DC16    BTN_P1_1_PRESS
+
+        ORG     0FFD4h
+        DC16    BTN_P2_1_PRESS
+
+        RSEG    CSTACK                  ; pre-declaration of segment
+        RSEG    CODE                    ; place program in 'CODE' segment
+
+init:   MOV     #SFE(CSTACK), SP        ; set up stack
+	
+	;MOV.W    #GIE+CPUOFF, SR
+        
+        
+main:   NOP                             ; main program
+        MOV.W    #WDTPW+WDTHOLD,&WDTCTL  ; Stop watchdog timer
+        //
+        
+        // P7.4
+        BIS.B    #00010000b, &P7DIR
+        BIS.B    #00010000b, &P7SEL
+        // P1.0
+        BIS.B    #00000001b, &P1DIR
+        BIC.B    #00000001b, &P1OUT
+        // P1.1
+        BIC.B    #00000010b, &P1SEL
+        BIC.B    #00000010b, &P1DIR
+        BIS.B    #00000010b, &P1REN
+        BIS.B    #00000010b, &P1OUT
+        BIS.B    #00000010b, &P1IES
+        BIS.B    #00000010b, &P1IE
+        // P2.1
+        BIC.B    #00000010b, &P2SEL
+        BIC.B    #00000010b, &P2DIR
+        BIS.B    #00000010b, &P2REN
+        BIS.B    #00000010b, &P2OUT
+        BIS.B    #00000010b, &P2IES
+        BIS.B    #00000010b, &P2IE
+        
+        EINT
+        
+        MOV.W #TASSEL_2+MC_1+ID_0+TBCLR,&TB0CTL ;Setting timer register. 
+        MOV.W #2272, TB0CCR0
+        MOV.W #1136, TB0CCR2
+        MOV.W #OUTMOD_3, TB0CCTL2
+        
+	MOV.W #GIE+CPUOFF,SR;
+        
+
+        // mode = ?
+        //MOV.W   #TBSSEL_2+MC_1+ID_0, TB0CTL
+        // CCR0 = ?
+        
+        //
+        //
+        JMP $                           ; jump to current location '$'
+                                        ; (endless loop)
+
+//TB_0_2_INTERRUPT
+//        XOR.B   #00010000b, &P7OUT
+//        XOR.B   #00000001b, &P1OUT
+//        MOV.W   #0,     &TB0IV
+//        MOV.W   #32768, TB0R
+//        RETI
+//
+BTN_P1_1_PRESS:
+        BIC.B   #00000010b, &P1IE
+        
+//        MOV.W   #300, TB0CCR0
+//        MOV.W   #300, TB0CCR2
+        SUB.W   #20, &TB0CCR2 // increase the volume
+        
+        BIC.B   #00000010b, &P1IFG
+        BIS.B   #00000010b, &P1IE
+        RETI
+
+BTN_P2_1_PRESS:
+        BIC.B   #00000010b, &P2IE
+        
+//        MOV.W   #300, TB0CCR0
+//        MOV.W   #3, TB0CCR2
+        ADD.W   #20, &TB0CCR0 // decrease the frequency
+        
+        BIC.B   #00000010b, &P2IFG
+        BIS.B   #00000010b, &P2IE
+        RETI
+
+        END
+/*
+    f = 25 kHz
+    D = 0.5
+    f0 =
+    CCR0 = f0/f
+    ex. CCR0 = 32768/25000 = 1.xxx
+        CCR0 = 1M/25k
+    
+    CCRn = CCR0 x D
+*/
