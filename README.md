@@ -258,6 +258,34 @@ Sub-Runtine 寫法:
 
 **(not yet)**
 
+# Interrupt
+## Basic Instruction
+- Software Interrupts
+    - exceptional condition
+        - ex. Divided by zero, System calls, ... etc
+    - special instruction
+        - from Device drivers
+- Wardware Interrupts
+    - ex. Pressing key, ... etc
+- When the interrupt occurs, the processor ...
+    1. Stop what it was doing.
+    2. Save enough information (PC & SR) for it to resume later on.
+    3. Identify the source of the interrupt.
+    4. Execute an interrupt service routine (ISR).
+    5. Restore PC & SR from stack.
+    6. Resume the interrupted program when the ISR has been completed.
+- Maskable and Non-maskable
+    - Maskable: clearing the General Interrupt Enable (GIE) in SR
+    - Non-maskable:
+        - System Reset : Power up, External Reset...
+        - System NMI : PWM, JTAG Mailbox...
+        - User NMI : Oscillator fault...
+
+## in ASM
+## in C
+## Interrupt Table
+
+# Other
 ## 32-bit multiplier
 (32-bit)x(32-bit)=(64-bit)
 
