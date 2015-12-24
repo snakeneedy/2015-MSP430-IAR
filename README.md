@@ -227,6 +227,18 @@ Sub-Runtine 寫法:
     </tr>
 </table>
 
+## Mixing multiple assembly codes
+
+- in which you want to include:
+    - `PUBLIC` the label name
+    - implement what label do
+    - ex. [lab-4.0.s43](https://github.com/snakeneedy/2015-MSP430-IAR/blob/master/lab4/lab-4.0.s43#L2)
+- the one want to include others
+    - `EXTERN` the label name
+    - `CALL #label_name`
+    - ex. [lab-4.1.s43](https://github.com/snakeneedy/2015-MSP430-IAR/blob/master/lab4/lab-4.1.s43#L19)
+- **Notice**: the registers used in different codes will conflict, make sure not using the same registers before including.
+
 ## 32-bit multiplier
 (32-bit)x(32-bit)=(64-bit)
 
