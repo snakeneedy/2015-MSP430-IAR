@@ -239,6 +239,25 @@ Sub-Runtine 寫法:
     - ex. [lab-4.1.s43](https://github.com/snakeneedy/2015-MSP430-IAR/blob/master/lab4/lab-4.1.s43#L19)
 - **Notice**: the registers used in different codes will conflict, make sure not using the same registers before including.
 
+## include ASM into C
+
+- First you should create two (or more) different types of projects
+    - some for ASM and some for C
+- in ASM
+    - `PUBLIC` the label name
+        - ex. `PUBLIC mpy`
+    - implement what label do
+    - **DEBUG the ASM code** in IAR IDE
+- in C
+    - `extern` the prototype for ASM
+        - such as `extern int mpy (short arge1, short arge2);`
+    - Right-click the project created, then choose **Add** -> **Add Files...**
+    - Choose the file: `{project-of-ASM}/Debug/Obj/asm.r43`
+
+### Passing parameters from C into ASM
+
+**(not yet)**
+
 ## 32-bit multiplier
 (32-bit)x(32-bit)=(64-bit)
 
