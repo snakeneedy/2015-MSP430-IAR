@@ -191,6 +191,42 @@ Sub-Runtine 寫法:
     ; MOV 0(SP), R5
     ; ADD #2, SP
 
+<table>
+    <tr>
+        <td>SP:MAX</td>
+    </tr>
+    <tr>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+    </tr>
+    <tr>
+        <td>POP ↑</td>
+    </tr>
+    <tr>
+        <td><b>SP</b></td>
+    </tr>
+    <tr>
+        <td>PUSH ↓</td>
+    </tr>
+    <tr>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+    </tr>
+    <tr>
+        <td>SP:0</td>
+    </tr>
+</table>
+
 ## 32-bit multiplier
 (32-bit)x(32-bit)=(64-bit)
 
