@@ -118,6 +118,8 @@ Microprocessor Principles and Applications
 ## Syntax
 
 - `; text`: 1 line comment
+- `// text`: 1 line comment
+- `/* ... */`: multiple line comment
 
 ### Arithmetic instructions
 
