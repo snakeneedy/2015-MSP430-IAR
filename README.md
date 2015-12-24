@@ -1,6 +1,20 @@
 # 2015 MSP430 IAR
 Microprocessor Principles and Applications
 
+# Lab Instruction Title
+
+1. (none)
+2. (none)
+3. Instruction set and Instruction cycle
+4. Modular Software Design
+5. Mixing C and Assembly With the MSP430
+6. Interrupts
+7. Timer
+8. Pulse Width Modulation (PWM)
+9. UART, SPI
+10. Analog-to-Digital Converter (A/D) Module
+
+
 # IAR Basic
 ## Tool Bar
 - Project
