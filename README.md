@@ -296,6 +296,17 @@ Sub-Runtine 寫法:
   <tr><td><pre>P2SEL</pre></td><td>Port P2 Selection</td><td>R / W</td><td>00000000b</td><td>功能選擇暫存器</td></tr>
 </table>
 
+## EINT, DINT
+
+- Enable Interrupt
+	- `ENIT`
+	- `GIE <- 1`
+	- `BIS.W  #8, SR`
+- Disable Interrupt
+	- `DINT`
+	- `GIE <- 0`
+	- `BIC.W  #8, SR`
+
 ## in ASM
 Syntax:
 
