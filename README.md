@@ -409,3 +409,32 @@ Sample code: [http://relic-toolkit.googlecode.com/svn/trunk/src/low/msp-asm/fp_s
         MOV &RES2, R6
         MOV &RES3, R7
 
+## Appendix
+
+- `__bcd_add_short`
+- `__bcd_add_long`
+- `__bcd_add_long_long`
+- `__bis_SR_register`
+- `__bis_SR_register_on_exit`
+- `__bic_SR_register`
+- `__bic_SR_register_on_exit`
+- `__enable_interrupt`
+- `__disable_interrupt`
+- `__even_in_range`
+- `__get_interrupt_state`
+- `__get_R4_register`
+- `__get_R5_register`
+- `__get_SP_register`
+- `__get_SR_register`
+- `__get_SR_register_on_exit`
+- `__low_power_mode_n` (n: 0~4)
+- `__low_power_mode_off_on_exit`
+- `__no_operation`
+- `__op_code`
+- `__segment_begin`
+- `__segment_end`
+- `__set_interrupt_state`
+- `__set_R4_register`
+- `__set_R5_register`
+- `__set_SP_register`
+
