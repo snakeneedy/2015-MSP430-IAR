@@ -281,7 +281,55 @@ Sub-Runtine 寫法:
         - System NMI : PWM, JTAG Mailbox...
         - User NMI : Oscillator fault...
 
+## Register
+
+`Pn???`, n <- port number
+
+<table>
+  <tr><td>Register</td><td>Description</td><td>Type</td><td>Initial Value</td><td>暫存器名稱</td></tr>
+  <tr><td><pre>P2IN</pre></td><td>Port P2 Input</td><td>R only</td><td>-----</td><td>輸入暫存器</td></tr>
+  <tr><td><pre>P2OUT</pre></td><td>Port P2 Output</td><td>R / W</td><td>No Change</td><td>輸出暫存器</td></tr>
+  <tr><td><pre>P2DIR</pre></td><td>Port P2 Direction</td><td>R / W</td><td>00000000b</td><td>方向暫存器</td></tr>
+  <tr><td><pre>P2IFG</pre></td><td>Port P2 Interrupt Flag</td><td>R / W</td><td>00000000b</td><td>中斷旗號暫存器</td></tr>
+  <tr><td><pre>P2IE</pre></td><td>Port P2 Interrupt Enable</td><td>R / W</td><td>00000000b</td><td>中斷致能暫存器</td></tr>
+  <tr><td><pre>P2IES</pre></td><td>Port P2 Interrupt Edge Select</td><td>R / W</td><td>No Change</td><td>中斷邊緣選擇暫存器</td></tr>
+  <tr><td><pre>P2SEL</pre></td><td>Port P2 Selection</td><td>R / W</td><td>00000000b</td><td>功能選擇暫存器</td></tr>
+</table>
+
 ## in ASM
+Syntax:
+
+	ORG    word_address
+	DW     label_name
+
+Take button `P2.1` for example
+
+	// before "init"
+	    ORG    0FFD4h             // I/O Port P2 Word Address
+	    DW     P2_ISR
+	
+	init:
+	    BIC.B  #00000010b, &P2DIR // direction: in
+	    BIC.B  #00000010b, &P2IFG // interrupt flag
+	    BIS.B  #00000010b, &P2REN // pullup or pulldown enable
+	    BIS.B  #00000010b, &P2OUT
+	    BIS.B  #00000010b, &P2IE  // interrupt enable
+	    BIS.B  #00000010b, &P2IES // interrupt edge select
+	    EINT                      // enbale interrupt
+	    // ... do something
+	    BIS.W  #CPUOFF, SR        // cpu off
+	    JMP $
+	
+	P2_ISR:
+	    BIC.B  #00000010b, &P2IE
+	    // ... do something
+	    BIC.B  #00000010b, &P2IFG
+	    BIS.B  #00000010b, &P2IE
+	    RETI // return interrupt
+	
+	    END
+
+
 ## in C
 ## Interrupt Table
 [Interrupt Vector Address](https://github.com/snakeneedy/2015-MSP430-IAR/blob/master/doc/Interrupt-Vector-Addresses.pdf)
