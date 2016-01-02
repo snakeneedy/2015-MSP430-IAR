@@ -311,6 +311,8 @@ Take button `P2.1` for example
 	init:
 	    BIC.B  #00000010b, &P2DIR // direction: in
 	    BIC.B  #00000010b, &P2IFG // interrupt flag
+	    BIC.B  #00000010b, &P2SEL // selection (function)
+
 	    BIS.B  #00000010b, &P2REN // pullup or pulldown enable
 	    BIS.B  #00000010b, &P2OUT
 	    BIS.B  #00000010b, &P2IE  // interrupt enable
@@ -331,6 +333,47 @@ Take button `P2.1` for example
 
 
 ## in C
+Syntax
+
+	// in main
+	//     setting the interrupt to the corresponding port
+	// outside main
+	#pragma vector=XXX_VECTOR // check "io430f5521.h" for MSP430F5529
+	__interrupt void isr_name(void)
+	{
+	    // ... do something
+	}
+
+Take button `P2.1` for example
+
+	#include "io430.h"
+	void main(void)
+	{
+	    WDTCTL = WDTPW+WDTHOLD;
+	
+	    P2DIR &= ~0x02; // same as P2DIR &= ~BIT1;
+	    P2IFG &= ~0x02;
+	    P2SEL &= ~0x02;
+	    P2REN |= 0x02;
+	    P2OUT |= 0x02;
+	    P2IE  |= 0x02;
+	    P2IES |= 0x02;
+	
+	    // interrupt enable + cpuoff
+	    __bis_SR_register(GIE+CPUOFF);
+	
+	    //return; // disable
+	}
+	
+	#pragma vector=PORT2_VECTOR
+	__interrupt void P2_ISR(void)
+	{
+	    P2IE  &= ~0x02; // disable interrupt
+	    // ... do something
+	    P2IFG &= ~0x02; // clean interrupt flag
+	    P2IE  |= 0x02;  // re-enable interrupt
+	}
+
 ## Interrupt Table
 [Interrupt Vector Address](https://github.com/snakeneedy/2015-MSP430-IAR/blob/master/doc/Interrupt-Vector-Addresses.pdf)
 
