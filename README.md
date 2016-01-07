@@ -390,11 +390,22 @@ Take button `P2.1` for example
 ## Interrupt Table
 Interrupt Vector Address: [https://github.com/snakeneedy/2015-MSP430-IAR/blob/master/doc/Interrupt-Vector-Addresses.pdf](https://github.com/snakeneedy/2015-MSP430-IAR/blob/master/doc/Interrupt-Vector-Addresses.pdf)
 
+
+# Timer
+## Clock Source
+- ACLK 32768(Hz)
+- MCLK 1M
+- SMCLK 1M
+
+## Watchdog Timer Control Register (`WDTCTL`)
+## Timer A Control Register (`TAxCTL`)
+## Capture/Compare Control Register (`TAxCCTLn`)
+
 # Other
 ## 32-bit multiplier
 (32-bit)x(32-bit)=(64-bit)
 
-Sample code: [http://relic-toolkit.googlecode.com/svn/trunk/src/low/msp-asm/fp_sqr32_256_comba.inc](http://relic-toolkit.googlecode.com/svn/trunk/src/low/msp-asm/fp_sqr32_256_comba.inc)
+Sample code: [http://relic-toolkit.googlecode.com/svn/trunk/src/low/msp-asm/fp\_sqr32\_256\_comba.inc](http://relic-toolkit.googlecode.com/svn/trunk/src/low/msp-asm/fp_sqr32_256_comba.inc)
 
     Multiplier:
         MOV #Num1, &MPY32L    ; Unsigned
