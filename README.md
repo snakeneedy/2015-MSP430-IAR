@@ -1,4 +1,4 @@
-# 2015 MSP430 IAR
+# NCKU 2015 MSP430 IAR
 Microprocessor Principles and Applications
 
 # Lab Instruction Title
